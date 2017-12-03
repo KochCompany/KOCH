@@ -8,8 +8,10 @@ const unirest = require('unirest');
 const settings = require('./settings.json');
 const wUrl = "http://api.openweathermap.org/data/2.5/weather?id=727011&appid=3d5632822352c9cd93370a8212356d3f";
 const ytdl = require('ytdl-core');
-const song = "./resources/alo.mp3";
-const mamo = "./resources/mamo.mp3";
+
+//const song = "./resources/alo.mp3";
+//const mamo = "./resources/mamo.mp3";
+//const tate = "./resources/tate.mp3";
 
 const streamOptions = {
 	seek: 0,
@@ -70,39 +72,22 @@ client.on('message', message => {
 	} else if(message.content.startsWith(settings.prefix + "leave")) {
 		const channel = message.member.voiceChannel;
 		channel.leave();
-	} else if(message.content.startsWith(settings.prefix + "alo")) {
+	} else if(checkSong(message)) {
 		const channel = message.member.voiceChannel;
 
 		if(channel == undefined) {
 			return;
 		}
+
+		let current = getSong();
+
 		channel.join().then(connection => {
-			broadcast.playStream(song);
+			broadcast.playStream(current);
 			connection.playBroadcast(broadcast);
-			// connection.on("speaking", (user, speaking) => {
-			// 	262229653895380992 istinskiq alotist
-			// 	if(user.id == "228266204911894534") {
-			// 		message.channel.send("zaeka e gei");
-			// 	}
-			// });
+
 		}).catch(console.error);
 		broadcast.on("end", () => {
 			channel.leave();
-		});
-
-	} else if(message.content.startsWith(settings.prefix + "jiwee mi se")) {
-		const channel = message.member.voiceChannel;
-
-		if(channel == undefined) {
-			return;
-		}
-
-		channel.join().then(connection => {
-			broadcast.playStream(mamo);
-			connection.playBroadcast(broadcast);
-			broadcast.on("end", () => {
-				channel.leave();
-			});
 		});
 	} else if(message.content == "zdr") {
 		message.channel.send("zdr, " + message.author);
@@ -113,19 +98,28 @@ client.on('message', message => {
 		}, function (error, response, body) {
 			if (!error && response.statusCode === 200) {
 				let temp = (body.main.temp - 273.15);
+				let zaprqnkata = client.emojis.find("name", "zaprqnkata");
 				if(temp <= -10) {
-					message.channel.send("aktualen klimat: " + temp + " °C \n'96 golemiq sneg");
+					message.channel.send("aktualen klimat: " + temp + " °C \n'96 golemiq sneg " + zaprqnkata);
 				} else {
-					message.channel.send("aktualen klimat: " + temp + " °C");
+					
+					message.channel.send("aktualen klimat: " + temp + " °C " + zaprqnkata);
 				}
 			}
 		})
 	} else if(message.content.startsWith(settings.prefix + 'addResponse')) {
 		let result = message.content.substring(13).split(",");
+		let response = "";
 		console.log(result, message.author.username);
-		addResponse(result[0], result[1]);
+		for(let i = 1; i < result.length; i++) {
+			response += result[i];
+			if(i < result.length - 1) {
+				response += ",";
+			}
+		}
+		addResponse(result[0], response);
 	} else if(message.content.startsWith(settings.prefix + "removeResponse")) { 
-		removeResponse(message.content.substring(15));
+		removeResponse(message.content.substring(16));
 	} else if(message.content.startsWith(settings.prefix + 'setgame')) {		
 		let modRole = message.guild.roles.find("name", "pulen pedal");
 		let ownerRole = message.guild.roles.find("name", "nai-golemiq pulen pedal");

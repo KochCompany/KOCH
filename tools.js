@@ -1,6 +1,14 @@
 const settings = require("./settings.json");
 let fs = require('fs');
 
+let song = {};
+let normalizedPath = require("path").join(__dirname, "resources");
+
+fs.readdirSync(normalizedPath).forEach(function(file) {
+    song[file] = "./resources/" + file;
+});
+
+
 module.exports = function() {  
     this.saveJSON = function() {
         let json = JSON.stringify(settings);
@@ -78,5 +86,21 @@ module.exports = function() {
             return 1;
         }
         return 0;
+    }
+
+    this.checkSong = function(msg) {
+        this.msg = msg.content;
+        for(let k in song) {
+            let name = k.split(".")[0];
+            if(this.msg.startsWith(settings.prefix + name)) {
+                this.songName = song[k];
+                return true;
+            }
+        }
+        return false;
+    }
+
+    this.getSong = function() {
+        return this.songName;
     }
 }
