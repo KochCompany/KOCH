@@ -26,22 +26,37 @@ module.exports = function() {
     }
 
     this.betterEval = function(input) {
-        if(input.match('^[+-/*=0-9 ]')) {
-            try {
-                return eval(input);
-            }
-            catch(err) {
-            }
+        let start = /^[0-9]+([+-/*]|(\*\*))[0-9]+/;
+        let body = /([+-/*]|(\*\*))[0-9]+/;
+        let holder = input;
+
+        if(!holder.match(start)) {
+            return;
+        } 
+        
+        holder = holder.replace(start, "");
+
+        while(holder != "") {
+            if(!holder.match(body)) {
+                return;
+            } 
+            holder = holder.replace(body, "");
         }
-        return "pas"; 
+
+        return eval(input); 
     }
 
-    this.quote = function(name) {
+    this.quote = function(name, i) {
         if(!checkName(name)) {
+            console.log(name);
             return "nqq takowa ime";
         }
-
         let quotes = settings[name];
+
+        if(i + 1 >= 0 && i + 1 < quotes.length) {
+            return quotes[i - 1];
+        }
+        
         return quotes[Math.floor(Math.random() * quotes.length)];
     }
 

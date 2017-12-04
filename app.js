@@ -9,10 +9,6 @@ const settings = require('./settings.json');
 const wUrl = "http://api.openweathermap.org/data/2.5/weather?id=727011&appid=3d5632822352c9cd93370a8212356d3f";
 const ytdl = require('ytdl-core');
 
-//const song = "./resources/alo.mp3";
-//const mamo = "./resources/mamo.mp3";
-//const tate = "./resources/tate.mp3";
-
 const streamOptions = {
 	seek: 0,
 	volume: 1
@@ -44,8 +40,10 @@ client.on('message', message => {
 		return;
 	}
 
-	if(betterEval(message.content) != "pas") {
-		message.channel.send(betterEval(message.content));
+	let res = betterEval(message.content);
+
+	if(res != undefined) {
+		message.channel.send(res);
 	}
 	
 	//autoresponder:
@@ -148,8 +146,8 @@ client.on('message', message => {
 		let result = message.content.substring(12);
 		message.channel.send(printQuotes(result));
 	} else if(message.content.startsWith(settings.prefix + "quote")) {
-		let name = message.content.substring(7);
-		message.channel.send(quote(name));
+		let name = message.content.split(" ");
+		message.channel.send(quote(name[1], name[2]));
 	}
 	
 });
