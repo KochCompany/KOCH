@@ -6,7 +6,6 @@ let fs = require('fs');
 let request = require("request");
 const unirest = require('unirest');
 const settings = require('./settings.json');
-const wUrl = "http://api.openweathermap.org/data/2.5/weather?id=727011&appid=3d5632822352c9cd93370a8212356d3f";
 const ytdl = require('ytdl-core');
 
 const streamOptions = {
@@ -45,12 +44,12 @@ client.on('message', message => {
 	if(res != undefined) {
 		message.channel.send(res);
 	}
-	
+
 	//autoresponder:
 
 	for(var k in settings.triggers) {
 		if(message.content == k) {
-			if(settings.triggers[k].startsWith("https://")) {
+			if(settings.triggers[k].startsWith("http")) {
 				message.channel.send({file: settings.triggers[k]});
 			} else {
 				message.channel.send(settings.triggers[k]);
@@ -67,6 +66,8 @@ client.on('message', message => {
 			result += settings.triggers[i] + ' -> ' + settings.responses[i] + '\n';
 		}
 		message.author.send(result);
+	}  else if(message.content.startsWith(settings.prefix + "gn")) {
+		message.channel.send("leka kurwi");
 	} else if(message.content.startsWith(settings.prefix + "leave")) {
 		const channel = message.member.voiceChannel;
 		channel.leave();
@@ -90,6 +91,7 @@ client.on('message', message => {
 	} else if(message.content == "zdr") {
 		message.channel.send("zdr, " + message.author);
 	} else if(message.content == settings.prefix + "weather") {
+		const wUrl = "http://api.openweathermap.org/data/2.5/weather?id=727011&appid=3d5632822352c9cd93370a8212356d3f";
 		request({
 			url: wUrl,
 			json: true
@@ -100,7 +102,7 @@ client.on('message', message => {
 				if(temp <= -10) {
 					message.channel.send("aktualen klimat: " + temp + " °C \n'96 golemiq sneg " + zaprqnkata);
 				} else {
-					
+
 					message.channel.send("aktualen klimat: " + temp + " °C " + zaprqnkata);
 				}
 			}
@@ -116,14 +118,15 @@ client.on('message', message => {
 			}
 		}
 		addResponse(result[0], response);
-	} else if(message.content.startsWith(settings.prefix + "removeResponse")) { 
+	} else if(message.content.startsWith(settings.prefix + "removeResponse")) {
 		removeResponse(message.content.substring(16));
-	} else if(message.content.startsWith(settings.prefix + 'setgame')) {		
+	} else if(message.content.startsWith(settings.prefix + 'setgame')) {
 		let modRole = message.guild.roles.find("name", "pulen pedal");
 		let ownerRole = message.guild.roles.find("name", "nai-golemiq pulen pedal");
 		if(message.member.roles.has(modRole.id) || message.member.roles.has(ownerRole.id)) {
 			let result = message.content.substring(9);
 			client.user.setGame(result);
+			settings.game = result;
 			saveJSON();
 		} else {
 			message.channel.send("Not authorized ;(");
@@ -149,7 +152,7 @@ client.on('message', message => {
 		let name = message.content.split(" ");
 		message.channel.send(quote(name[1], name[2]));
 	}
-	
+
 });
 
 client.login(settings.token);
