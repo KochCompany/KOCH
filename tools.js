@@ -9,7 +9,7 @@ fs.readdirSync(normalizedPath).forEach(function(file) {
 });
 
 
-module.exports = function() {  
+module.exports = function() {
     this.saveJSON = function() {
         let json = JSON.stringify(settings);
         fs.writeFile("settings.json", json, "utf8", () => {});
@@ -19,7 +19,7 @@ module.exports = function() {
         settings.triggers[trigger] = response;
         this.saveJSON();
     }
-    
+
     this.removeResponse = function(trigger) {
         delete settings.triggers[trigger];
         this.saveJSON();
@@ -29,21 +29,25 @@ module.exports = function() {
         let start = /^[0-9]+([+-/*]|(\*\*))[0-9]+/;
         let body = /([+-/*]|(\*\*))[0-9]+/;
         let holder = input;
+        for(let i = 0; i < holder.length; i++) {
+            holder = holder.replace(/ /, "");
+        }
+        console.log(holder);
 
         if(!holder.match(start)) {
             return;
-        } 
-        
+        }
+
         holder = holder.replace(start, "");
 
         while(holder != "") {
             if(!holder.match(body)) {
                 return;
-            } 
+            }
             holder = holder.replace(body, "");
         }
 
-        return eval(input); 
+        return eval(input);
     }
 
     this.quote = function(name, i) {
@@ -56,14 +60,14 @@ module.exports = function() {
         if(i + 1 >= 0 && i + 1 < quotes.length) {
             return quotes[i - 1];
         }
-        
+
         return quotes[Math.floor(Math.random() * quotes.length)];
     }
 
     this.addQuote = function(name, quote) {
         if(!checkName(name)) {
             return;
-        } 
+        }
         settings[name].push(quote);
         this.saveJSON();
     }
@@ -74,7 +78,7 @@ module.exports = function() {
         }
 
         this.currentName = name;
-        
+
         let result = '';
         for(var i = 0; i < settings[name].length; i++) {
             result += (i + 1) + ". " + settings[name][i] + "\n";
