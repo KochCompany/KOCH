@@ -9,7 +9,7 @@ fs.readdirSync(normalizedPath).forEach(function(file) {
 });
 
 
-module.exports = function() {  
+module.exports = function() {
     this.saveJSON = function() {
         let json = JSON.stringify(settings);
         fs.writeFile("settings.json", json, "utf8", () => {});
@@ -19,7 +19,7 @@ module.exports = function() {
         settings.triggers[trigger] = response;
         this.saveJSON();
     }
-    
+
     this.removeResponse = function(trigger) {
         delete settings.triggers[trigger];
         this.saveJSON();
@@ -29,62 +29,64 @@ module.exports = function() {
         let start = /^[0-9]+([+-/*]|(\*\*))[0-9]+/;
         let body = /([+-/*]|(\*\*))[0-9]+/;
         let holder = input;
+        for (let i = 0; i < holder.length; i++) {
+            holder = holder.replace(/ /, "");
+        }
 
-        if(!holder.match(start)) {
+        if (!holder.match(start)) {
             return;
-        } 
-        
+        }
+
         holder = holder.replace(start, "");
 
-        while(holder != "") {
-            if(!holder.match(body)) {
+        while (holder != "") {
+            if (!holder.match(body)) {
                 return;
-            } 
+            }
             holder = holder.replace(body, "");
         }
 
-        return eval(input); 
+        return eval(input);
     }
 
     this.quote = function(name, i) {
-        if(!checkName(name)) {
+        if (!checkName(name)) {
             console.log(name);
             return "nqq takowa ime";
         }
         let quotes = settings[name];
 
-        if(i + 1 >= 0 && i + 1 < quotes.length) {
+        if (i + 1 >= 0 && i + 1 < quotes.length) {
             return quotes[i - 1];
         }
-        
+
         return quotes[Math.floor(Math.random() * quotes.length)];
     }
 
     this.addQuote = function(name, quote) {
-        if(!checkName(name)) {
+        if (!checkName(name)) {
             return;
-        } 
+        }
         settings[name].push(quote);
         this.saveJSON();
     }
 
     this.printQuotes = function(name) {
-        if(!checkName(name)) {
+        if (!checkName(name)) {
             return;
         }
 
         this.currentName = name;
-        
-        let result = '';
-        for(var i = 0; i < settings[name].length; i++) {
-            result += (i + 1) + ". " + settings[name][i] + "\n";
-        }
 
+        let result = '';
+        for (var i = 0; i < settings[name].length; i++) {
+            result += "**" + (i + 1) + "**" + ". " + settings[name][i] + "\n";
+        }
         return result;
     }
 
     this.removeQuote = function(i) {
-        if(this.currentName) {
+        if (this.currentName) {
             if(i < 1 || i > settings[this.currentName].length) {
                 return 0;
             }
@@ -97,7 +99,7 @@ module.exports = function() {
     }
 
     this.checkName = function(name) {
-        if(settings[name]) {
+        if (settings[name]) {
             return 1;
         }
         return 0;
@@ -105,9 +107,9 @@ module.exports = function() {
 
     this.checkSong = function(msg) {
         this.msg = msg.content;
-        for(let k in song) {
+        for (let k in song) {
             let name = k.split(".")[0];
-            if(this.msg.startsWith(settings.prefix + name)) {
+            if (this.msg.startsWith(settings.prefix + name)) {
                 this.songName = song[k];
                 return true;
             }
@@ -117,5 +119,13 @@ module.exports = function() {
 
     this.getSong = function() {
         return this.songName;
+    }
+
+    this.clearBot = function(message) {
+        if (message.channel != "315863932487204866") {
+            this.msg = message.content;
+
+            if (this.msg.startsWith())
+        }
     }
 }
