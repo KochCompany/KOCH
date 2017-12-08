@@ -51,9 +51,23 @@ client.on('message', message => {
 
 	let botChannel = message.guild.channels.find("name", "djang1r");
 	if (message.channel.id != botChannel.id) {
-		let expr = /^[!?;]+/;
-		if (message.content.match(expr) || message.author.bot) {
-			message.delete();
+		let expr = /^[!?;]/;
+		if (message.content.match(expr)) {
+			let words = ["play", "join", "skip", "np", "leave", "queue", "pause", "toggle", "choose", "cancel"];
+			let i = 1;
+			if (message.content.startsWith(";;")) {
+				i = 2;
+			} else if (message.content.startsWith("!!!")) {
+				i = 3;
+			} else if (message.content.startsWith(";")) {
+				i = 0;
+			}
+			let word = message.content.substring(i);
+			console.log(word);
+			if (word in words) {
+				message.delete();
+				return;
+			}
 		}
 	}
 

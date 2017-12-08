@@ -10,22 +10,22 @@ fs.readdirSync(normalizedPath).forEach(function(file) {
 
 
 module.exports = function() {
-    function saveJSON() {
+    this.saveJSON = function() {
         let json = JSON.stringify(settings);
         fs.writeFile("settings.json", json, "utf8", () => {});
     }
 
-    function addResponse(trigger, response) {
+    this.addResponse = function(trigger, response) {
         settings.triggers[trigger] = response;
         this.saveJSON();
     }
 
-    function removeResponse(trigger) {
+    removeResponse = function(trigger) {
         delete settings.triggers[trigger];
         this.saveJSON();
     }
 
-    function betterEval(input) {
+    this.betterEval = function(input) {
         let start = /^[0-9]+([+-/*]|(\*\*))[0-9]+/;
         let body = /([+-/*]|(\*\*))[0-9]+/;
         let holder = input;
@@ -49,7 +49,7 @@ module.exports = function() {
         return eval(input);
     }
 
-    function quote(name, i) {
+    this.quote = function(name, i) {
         if (!checkName(name)) {
             console.log(name);
             return "nqq takowa ime";
@@ -63,7 +63,7 @@ module.exports = function() {
         return quotes[Math.floor(Math.random() * quotes.length)];
     }
 
-    function addQuote(name, quote) {
+    this.addQuote = function(name, quote) {
         if (!checkName(name)) {
             return;
         }
@@ -71,7 +71,7 @@ module.exports = function() {
         this.saveJSON();
     }
 
-    function printQuotes(name) {
+    this.printQuotes = function(name) {
         if (!checkName(name)) {
             return;
         }
@@ -85,7 +85,7 @@ module.exports = function() {
         return result;
     }
 
-    function removeQuote(i) {
+    this.removeQuote = function(i) {
         if (this.currentName) {
             if(i < 1 || i > settings[this.currentName].length) {
                 return 0;
@@ -98,14 +98,14 @@ module.exports = function() {
         return -1;
     }
 
-    function checkName(name) {
+    this.checkName = function(name) {
         if (settings[name]) {
             return 1;
         }
         return 0;
     }
 
-    function checkSong(msg) {
+    this.checkSong = function(msg) {
         this.msg = msg.content;
         for (let k in song) {
             let name = k.split(".")[0];
@@ -117,7 +117,7 @@ module.exports = function() {
         return false;
     }
 
-    function getSong() {
+    this.getSong = function() {
         return this.songName;
     }
 }
