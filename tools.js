@@ -25,59 +25,170 @@ module.exports = function() {
         this.saveJSON();
     }
 
-    /*this.getBrackets = function(input) {
-
+    this.getLastBrackets = function(input) {
         let brackets = {
             '(': ')',
             '{': '}',
             '[': ']'
         }
-        let equil = 0;
-        let positions = [];
-        let openStack = [];
 
+        let openStack = [];
         let count = 0;
+        let openings = Object.keys(brackets);
+        for (let sign of input) {
+            for (let opening of openings) {
+                if (sign == opening) {
+                    openStack.push(count);
+                } else if (sign == brackets[opening]) {
+                    let spliced = openStack.splice(openStack.length - 1, 1)[0];
+                    return [spliced, count];
+                }
+            }
+            count++;
+        }
+        return undefined;
+    }
+
+    this.checkBrackets = function(input) {
+        let brackets = {
+            '(': ')',
+            '{': '}',
+            '[': ']'
+        }
+
+        let openingStack = [];
+
+        let equil = 0;
         let openings = Object.keys(brackets);
         for (let opening of openings) {
             for (let sign of input) {
                 if (sign == opening) {
-                    openStack.push(count);
+                    openingStack.push(sign);
                     equil++;
                 } else if (sign == brackets[opening]) {
-                    positions.push(openStack.splice(openStack.length-1, 1), count);
+                    let opening = openingStack.splice(openingStack.length-1, 1)[0];
                     equil--;
+                    if (sign != brackets[opening]) {
+                        return 0;
+                    }
                 }
-                count++;
-            }
-            if (equil != 0) {
-                return [];
             }
         }
+        if (equil != 0) {
+            return 0;
+        }
+        return 1;
+    }
 
-        return positions;
-    }*/
+    this.simplify = function(input) {
+        if (!this.checkBrackets(input)) {
+            return undefined;
+        }
+        let pos = this.getLastBrackets(input);
 
-    this.betterEval = function(input) {
+        let evaluated = false;
+        let ret = "";
+        while (pos != undefined) {
+            let cut = input.substring(pos[0], pos[1]);
+
+            cut = cut.replace(/[\[\(\{]/, '');
+            cut = cut.replace(/[\]\)\}]/, '');
+
+            if (!this.checkExpression(cut)) {
+                return undefined;
+            }
+
+            cut = this.getZero(cut);
+            let result = eval(cut);
+            let first = input.substring(0, pos[0]);
+            let second = input.substring(pos[1]+1);
+            input = first + result + second;
+            pos = this.getLastBrackets(input);
+            evaluated = true;
+        }
+
+        if (!this.checkExpression(input) && !evaluated) {
+            return undefined;
+        }
+
+        input = this.getZero(input);
+        return eval(input);
+    }
+
+    this.getZero = function(input) {
+        if (input[0] == '-') {
+            let end;
+            for (let i = 1; i < input.length; i++) {
+                if (!input[i].match(/[0-9]/) && input[i] != ".") {
+                    end = i;
+                    break;
+                }
+            }
+            input = this.insertCharacter(input, end, ")");
+            input = "(0" + input;
+        }
+        return input;
+    }
+
+    this.checkExpression = function(input) {
         let start = /^(|-)[0-9]+([+-/*]|(\*\*))(|-)[0-9]+/;
         let body = /([+-/*]|(\*\*))(|-)[0-9]+/;
-        let holder = input;
-        for (let i = 0; i < holder.length; i++) {
-            holder = holder.replace(/ /, "");
+
+        for (let i = 0; i < input.length; i++) {
+            input = input.replace(/ /, "");
         }
 
-        if (!holder.match(start)) {
-            return;
+        if (!input.match(start)) {
+            return 0;
         }
 
-        holder = holder.replace(start, "");
+        input = input.replace(start, "");
 
-        while (holder != "") {
-            if (!holder.match(body)) {
-                return;
+        while (input != "") {
+            if (!input.match(body)) {
+                return 0;
             }
-            holder = holder.replace(body, "");
+            input = input.replace(body, "");
         }
-        return eval(input);
+        return 1;
+    }
+
+    this.betterEval = function(input) {
+        input = this.simplify(input);
+        if (input != undefined) {
+            return input;
+        }
+    }
+
+    this.space = function(input) {
+        input = "" + input;
+
+        let pos = 1;
+
+        for (let i = 0; i < input.length; i++) {
+            if (input[i] == "e" || input[i] == ".") { 
+                return input;
+            }
+        }
+
+        for (let i = input.length-1; i >= 0; i--) {
+            if (pos%3 == 0) {
+                input = this.insertCharacter(input, i, ",");
+            }
+            pos++;
+        }
+        return input;
+    }
+
+    this.insertCharacter = function(input, i, ch) {
+        if (i > input.length - 1 || i < 0) {
+            return undefined;
+        }
+
+        let first = input.substring(0, i);
+        let second = input.substring(i);
+
+        return first + ch + second;
     }
 
     this.quote = function(name, i) {
