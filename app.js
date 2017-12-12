@@ -45,6 +45,7 @@ client.on('message', message => {
 
 	let res = betterEval(message.content);
 	if (res != undefined) {
+		res = space(res);
 		message.channel.send(res);
 		return;
 	}
@@ -137,7 +138,7 @@ client.on('message', message => {
 	} else if (message.content.startsWith(settings.prefix + 'addResponse')) {
 		let result = message.content.substring(13).split(",");
 		let response = "";
-		console.log(result,);
+		console.log(result);
 		for (let i = 1; i < result.length; i++) {
 			response += result[i];
 			if (i < result.length - 1) {
