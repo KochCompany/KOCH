@@ -52,22 +52,8 @@ client.on('message', message => {
 	let botChannel = message.guild.channels.find("name", "djang1r");
 	if (message.channel.id != botChannel.id) {
 		let expr = /^[!?;]/;
-		if (message.content.match(expr)) {
-			let words = ["play", "join", "skip", "np", "leave", "queue", "pause", "toggle", "choose", "cancel"];
-			let i = 1;
-			if (message.content.startsWith(";;")) {
-				i = 2;
-			} else if (message.content.startsWith("!!!")) {
-				i = 3;
-			} else if (message.content.startsWith(";")) {
-				i = 0;
-			}
-			let word = message.content.substring(i);
-			console.log(word);
-			if (word in words) {
-				message.delete();
-				return;
-			}
+		if (message.content.match(expr) || message.author.bot) {
+			message.delete();
 		}
 	}
 
@@ -87,8 +73,8 @@ client.on('message', message => {
 	//commands:
 
 	if (message.content == "$help") {
-		let info = "$weather \n$addResponse {trigger} {response} \n$removeResponse {trigger} \n$quote {name} \
-			\n$showQuotes {name} \n$addQuote {name} {quote} \n$removeQuote {name} -> $select {number}"
+		let info = "$weather \n$addResponse {trigger}, {response} \n$removeResponse {trigger} \n$quote {name} \
+			\n$showQuotes {name} \n$addQuote {name}, {quote} \n$removeQuote {name} -> $select {number}"
 		message.author.send(info);
 	} else if (message.content == "$leave") {
 		const channel = message.member.voiceChannel;
@@ -112,27 +98,46 @@ client.on('message', message => {
 		});
 	} else if (message.content == "zdr") {
 		message.channel.send("zdr, " + message.author);
-	} else if (message.content == settings.prefix + "weather") {
-		const wUrl = "http://api.openweathermap.org/data/2.5/weather?id=727011&appid=3d5632822352c9cd93370a8212356d3f";
+	} else if (message.content.startsWith(settings.prefix + "weather")) {
+		let id = "727011";
+		let plovdiv = "728194";
+
+		result = message.content.split(" ");
+		//console.log(result);
+		if (result[1] == "pld") {
+			id = plovdiv;
+		}
+
+		const wUrl = "http://api.openweathermap.org/data/2.5/weather?id=" + id + "&appid=3d5632822352c9cd93370a8212356d3f";
 		let info = {
 			url: wUrl,
 			json: true
 		};
+
 		request(info, (error, response, body) => {
 			if (!error && response.statusCode === 200) {
 				let temp = (body.main.temp - 273.15);
+				let wSpeed = body.wind.speed;
+				let tempMsg = "";
+				let windMsg = "";
 				let zaprqnkata = client.emojis.find("name", "zaprqnkata");
+
 				if (temp <= -5) {
-					message.channel.send("aktualen klimat: " + temp + " °C \n'96 golemiq sneg " + zaprqnkata);
-				} else {
-					message.channel.send("aktualen klimat: " + temp + " °C " + zaprqnkata);
+					tempMsg = "\n'96 golemiq sneg "
 				}
+
+				if (wSpeed >= 10) {
+					windMsg = "duha kat 03";
+				}
+
+				message.channel.send("aktualen klimat: " + temp + " °C " + zaprqnkata + tempMsg+
+						"\nwetar: " + wSpeed + " m/s " + windMsg);
 			}
 		})
 	} else if (message.content.startsWith(settings.prefix + 'addResponse')) {
 		let result = message.content.substring(13).split(",");
 		let response = "";
-		console.log(result, message.author.username);
+		console.log(result,);
 		for (let i = 1; i < result.length; i++) {
 			response += result[i];
 			if (i < result.length - 1) {
@@ -156,7 +161,14 @@ client.on('message', message => {
 		}
 	} else if (message.content.startsWith(settings.prefix + "addQuote")) {
 		let result = message.content.substring(10).split(",");
-		addQuote(result[0], result[1]);
+		let sum = "";
+		for (let i = 1; i < result.length; i++) {
+			sum += result[i];
+			if(i < result.length - 1) {
+				sum += ",";
+			}
+		}
+		addQuote(result[0], sum);
 		console.log(result, message.content.author);
 	} else if (message.content.startsWith(settings.prefix + "removeQuote")) {
 		let result = message.content.substring(13);

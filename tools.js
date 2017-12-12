@@ -20,14 +20,46 @@ module.exports = function() {
         this.saveJSON();
     }
 
-    removeResponse = function(trigger) {
+    this.removeResponse = function(trigger) {
         delete settings.triggers[trigger];
         this.saveJSON();
     }
 
+    /*this.getBrackets = function(input) {
+
+        let brackets = {
+            '(': ')',
+            '{': '}',
+            '[': ']'
+        }
+        let equil = 0;
+        let positions = [];
+        let openStack = [];
+
+        let count = 0;
+        let openings = Object.keys(brackets);
+        for (let opening of openings) {
+            for (let sign of input) {
+                if (sign == opening) {
+                    openStack.push(count);
+                    equil++;
+                } else if (sign == brackets[opening]) {
+                    positions.push(openStack.splice(openStack.length-1, 1), count);
+                    equil--;
+                }
+                count++;
+            }
+            if (equil != 0) {
+                return [];
+            }
+        }
+
+        return positions;
+    }*/
+
     this.betterEval = function(input) {
-        let start = /^[0-9]+([+-/*]|(\*\*))[0-9]+/;
-        let body = /([+-/*]|(\*\*))[0-9]+/;
+        let start = /^(|-)[0-9]+([+-/*]|(\*\*))(|-)[0-9]+/;
+        let body = /([+-/*]|(\*\*))(|-)[0-9]+/;
         let holder = input;
         for (let i = 0; i < holder.length; i++) {
             holder = holder.replace(/ /, "");
@@ -45,7 +77,6 @@ module.exports = function() {
             }
             holder = holder.replace(body, "");
         }
-
         return eval(input);
     }
 
