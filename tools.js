@@ -166,7 +166,7 @@ module.exports = function() {
         let pos = 1;
 
         for (let i = 0; i < input.length; i++) {
-            if (input[i] == "e" || input[i] == ".") { 
+            if (input[i] == "e" || input[i] == "") { 
                 return input;
             }
         }
