@@ -131,8 +131,8 @@ module.exports = function() {
     }
 
     this.checkExpression = function(input) {
-        let start = /^(|-)[0-9]+([+-/*]|(\*\*))(|-)[0-9]+/;
-        let body = /([+-/*]|(\*\*))(|-)[0-9]+/;
+        let start = /^(|-)[0-9]+(([+-][0-9]+)|(([/*]|(\*\*))(|-)[0-9]+))/;
+        let body = /([+-][0-9]+)|(([/*]|(\*\*))(|-)[0-9]+)/;
 
         for (let i = 0; i < input.length; i++) {
             input = input.replace(/ /, "");
@@ -163,20 +163,30 @@ module.exports = function() {
     this.space = function(input) {
         input = "" + input;
 
-        let pos = 1;
+        let res;
+        let sign = '';
 
         for (let i = 0; i < input.length; i++) {
-            if (input[i] == "e" || input[i] == "") { 
+            if (input[i].match(/[^0-9]/)) { //a8912
                 return input;
             }
         }
 
-        for (let i = input.length-1; i >= 0; i--) {
-            if (pos%3 == 0) {
-                input = this.insertCharacter(input, i, ",");
-            }
-            pos++;
+        if (res == undefined) {
+            res = [input];
         }
+
+        for (let j = 0; j < res.length; j++) {
+            let pos = 1;
+            for (let i = res[j].length-1; i > 0; i--) {
+                if (pos % 3 == 0) {
+                    res[j] = this.insertCharacter(res[j], i, ",");
+                }
+                pos++;
+            }
+        }
+
+        input = res.join(sign);
         return input;
     }
 
