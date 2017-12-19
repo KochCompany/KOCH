@@ -86,7 +86,6 @@ module.exports = function() {
         }
         let pos = this.getLastBrackets(input);
 
-        let evaluated = false;
         let ret = "";
         while (pos != undefined) {
             let cut = input.substring(pos[0], pos[1]);
@@ -104,14 +103,14 @@ module.exports = function() {
             let second = input.substring(pos[1]+1);
             input = first + result + second;
             pos = this.getLastBrackets(input);
-            evaluated = true;
         }
 
-        if (!this.checkExpression(input) && !evaluated) {
+        if (!this.checkExpression(input)) {
             return undefined;
         }
 
         input = this.getZero(input);
+
         return eval(input);
     }
 
@@ -131,32 +130,18 @@ module.exports = function() {
     }
 
     this.checkExpression = function(input) {
-        let start = /^(|-)[0-9]+(([+-][0-9]+)|(([/*]|(\*\*))(|-)[0-9]+))/;
-        let body = /([+-][0-9]+)|(([/*]|(\*\*))(|-)[0-9]+)/;
-
-        for (let i = 0; i < input.length; i++) {
-            input = input.replace(/ /, "");
-        }
-
-        if (!input.match(start)) {
-            return 0;
-        }
-
-        input = input.replace(start, "");
-
-        while (input != "") {
-            if (!input.match(body)) {
-                return 0;
-            }
-            input = input.replace(body, "");
-        }
-        return 1;
+        let valid = /^-?[0-9]+([+-/*][0-9]+)+$/;
+        return input.match(valid);
     }
 
     this.betterEval = function(input) {
         input = this.simplify(input);
         if (input != undefined) {
-            return input;
+            try {
+                return input;
+            } catch (err) {
+                console.log(err);
+            }
         }
     }
 
