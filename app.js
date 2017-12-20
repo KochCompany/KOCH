@@ -22,6 +22,7 @@ const commandList = [new Command("help", helpF),
     				 new Command("select", selectF),
     				 new Command("quote", quoteF)];
 
+
 client.on('ready', () => {
 	console.log('zdr kurwi');
 	client.user.setGame(settings.game);

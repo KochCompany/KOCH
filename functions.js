@@ -1,6 +1,7 @@
+const request = require("request");
 module.exports = function() {
     this.helpF = function(message) {
-        let info = "$weather \n$addResponse {trigger}, {response} \n$removeResponse {trigger} \n$quote {name} \
+        let info = "$weather [pld] \n$addResponse {trigger}, {response} \n$removeResponse {trigger} \n$quote {name} \
         \n$showQuotes {name} \n$addQuote {name}, {quote} \n$removeQuote {name} -> $select {number}";
         message.author.send(info);
     }
@@ -38,7 +39,7 @@ module.exports = function() {
                 let wSpeed = body.wind.speed;
                 let tempMsg = "";
                 let windMsg = "";
-                let zaprqnkata = client.emojis.find("name", "zaprqnkata");
+                let zaprqnkata = message.client.emojis.find("name", "zaprqnkata");
 
                 if (temp <= -5) {
                     tempMsg = "\n'96 golemiq sneg "
@@ -48,8 +49,7 @@ module.exports = function() {
                     windMsg = "duha kat 03";
                 }
 
-                message.channel.send(`aktualen klimat w ${city}: ${temp} °C ${zaprqnkata} ${tempMsg}\n
-                                      wetar: ${wSpeed} m/s ${windMsg}`);
+                message.channel.send(`aktualen klimat w ${city}: ${temp} °C ${zaprqnkata} ${tempMsg}\nwetar: ${wSpeed} m/s ${windMsg}`);
             }
         });
     }
